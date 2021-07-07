@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import asyncio
 import random
 import youtube_dl
+from binance.client import Client, BinanceAPIException
+from datetime import datetime
 
 load_dotenv(dotenv_path="config")
 
@@ -15,6 +17,42 @@ bot = commands.Bot(command_prefix="!", intents=default_intents, description="Bot
 
 musics = {}
 ytdl = youtube_dl.YoutubeDL()
+
+BINANCE_API_KEY = os.getenv('BINANCE_API_KEY')
+BINANCE_API_SECRET = os.getenv('BINANCE_API_SECRET')
+
+binanceC = Client(BINANCE_API_KEY, BINANCE_API_SECRET)
+
+
+@bot.command(name="getPrice")
+async def get_price(ctx, assets):
+    assets = assets.upper()
+    assets2 = assets.split("/")
+
+    try:
+        assets_details = binanceC.get_ticker(symbol=f"{assets2[0] + assets2[1]}")
+        embed = discord.Embed(title=f"Current price of {assets}", description="", url="https://github.com/Lutenruto/Lybot",
+                              color=0xf7c318)
+        embed.set_thumbnail(url="https://nsa40.casimages.com/img/2021/07/07/210707102651269549.png")
+        embed.add_field(name="\u200b", value=""
+                                             f"**CURRENT:** {format(float(assets_details['lastPrice']), '.2f')}\n"
+                                             f"**OPEN:** {format(float(assets_details['openPrice']), '.2f')}\n\n"
+                                             f"**PERCENTAGE CHANGE:** {format(float(assets_details['priceChangePercent']), '.2f')}\n\n"
+                                             f"**HIGH:** {format(float(assets_details['highPrice']), '.2f')}\n"
+                                             f"**LOW:** {format(float(assets_details['lowPrice']), '.2f')}\n\n"
+                                             f"**{assets2[0]} VOLUME:** {format(float(assets_details['volume']), '.2f')}\n"
+                                             f"**{assets2[1]} VOLUME:** {format(float(assets_details['quoteVolume']), '.2f')}\n"
+                                             f"\u200b"
+                        , inline=False)
+
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        embed.set_footer(text=dt_string)
+
+        await ctx.send(embed=embed)
+    except BinanceAPIException as e:
+        await ctx.send("Oops, I think this combination is not available.")
+        return
 
 
 class Video:
@@ -186,6 +224,8 @@ async def command_display(ctx):
                           "**!cuisiner** => Fill in the order form and follow the instructions\n"
                           "**!roulette** => Allows you to participate in a roulette game where you have a win at the end (ban, kick, ...)\n"
                           "**!infoServ** => Shows basic server information\n"
+                          "**!getPrice** => Retrieve asset information from Binance\n"
+                          "```example : !getPrice btc/usdt```"
                           "---------------------------------------------------------------"
                     , inline=False)
     embed.add_field(name="Commandes musique",
