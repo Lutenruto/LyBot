@@ -91,8 +91,23 @@ async def on_ready():
 # Petit message lorsqu'un membre rejoins le serveur
 @bot.event
 async def on_member_join(member):
-    channel = member.guild.get_channel(833826844511436825)
-    await channel.send(f"Accueillons à bras ouvert {member.mention} ! Bienvenue dans ce magnifique serveur 😁")
+    channel = member.guild.get_channel(852227347800784917)
+    embed = discord.Embed(title="**Bienvenue !**", description="", url="https://github.com/Lutenruto/Lybot",
+                          color=0x407294)
+    embed.set_author(name=member.display_name,
+                     icon_url=member.avatar_url,
+                     url="https://github.com/Lutenruto/")
+    embed.set_thumbnail(url="https://emoji.gg/assets/emoji/6721_AB_welcome.png")
+    embed.add_field(name=f"Accueillons à bras ouvert",
+                    value=""
+                          f"{member.mention} !\n"
+                          "Bienvenue dans ce magnifique serveur 😁\n"
+                          "---------------------------------------------------------------"
+                    , inline=False)
+
+    embed.set_footer(text="Pour plus d'information, contacter Lutenruto")
+
+    await channel.send(embed=embed)
 
 
 # Petit message lorsqu'un membre du serveur part
@@ -102,8 +117,22 @@ async def on_member_remove(member):
     for i in banned_users:
         if i.user.discriminator == member.discriminator:
             return
-    channel = member.guild.get_channel(833826844511436825)
-    await channel.send(f"En cette belle journée nous déplorons la perte d'un membre bien aimé, {member.mention}.")
+    channel = member.guild.get_channel(852227347800784917)
+    embed = discord.Embed(title="**Au revoir !**", description="", url="https://github.com/Lutenruto/Lybot",
+                          color=0x008080)
+    embed.set_author(name=member.display_name,
+                     icon_url=member.avatar_url,
+                     url="https://github.com/Lutenruto/")
+    embed.set_thumbnail(url="https://emoji.gg/assets/emoji/7242_bye_bean.png")
+    embed.add_field(name="En cette belle journée nous déplorons la perte d'un membre bien aimé,",
+                    value=""
+                          f"{member.mention}\n"
+                          "---------------------------------------------------------------"
+                    , inline=False)
+
+    embed.set_footer(text="Pour plus d'information, contacter Lutenruto")
+
+    await channel.send(embed=embed)
 
 
 @bot.event
