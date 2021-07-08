@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import asyncio
 import random
 import youtube_dl
+from binance.client import Client, BinanceAPIException
+from datetime import datetime
 
 load_dotenv(dotenv_path="config")
 
@@ -15,6 +17,42 @@ bot = commands.Bot(command_prefix="!", intents=default_intents, description="Bot
 
 musics = {}
 ytdl = youtube_dl.YoutubeDL()
+
+BINANCE_API_KEY = os.getenv('BINANCE_API_KEY')
+BINANCE_API_SECRET = os.getenv('BINANCE_API_SECRET')
+
+binanceC = Client(BINANCE_API_KEY, BINANCE_API_SECRET)
+
+
+@bot.command(name="getPrice")
+async def get_price(ctx, assets):
+    assets = assets.upper()
+    assets2 = assets.split("/")
+
+    try:
+        assets_details = binanceC.get_ticker(symbol=f"{assets2[0] + assets2[1]}")
+        embed = discord.Embed(title=f"Current price of {assets}", description="", url="https://github.com/Lutenruto/Lybot",
+                              color=0xf7c318)
+        embed.set_thumbnail(url="https://nsa40.casimages.com/img/2021/07/07/210707102651269549.png")
+        embed.add_field(name="\u200b", value=""
+                                             f"**CURRENT:** {format(float(assets_details['lastPrice']), '.2f')}\n"
+                                             f"**OPEN:** {format(float(assets_details['openPrice']), '.2f')}\n\n"
+                                             f"**PERCENTAGE CHANGE:** {format(float(assets_details['priceChangePercent']), '.2f')}\n\n"
+                                             f"**HIGH:** {format(float(assets_details['highPrice']), '.2f')}\n"
+                                             f"**LOW:** {format(float(assets_details['lowPrice']), '.2f')}\n\n"
+                                             f"**{assets2[0]} VOLUME:** {format(float(assets_details['volume']), '.2f')}\n"
+                                             f"**{assets2[1]} VOLUME:** {format(float(assets_details['quoteVolume']), '.2f')}\n"
+                                             f"\u200b"
+                        , inline=False)
+
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        embed.set_footer(text=dt_string)
+
+        await ctx.send(embed=embed)
+    except BinanceAPIException as e:
+        await ctx.send("Oops, I think this combination is not available.")
+        return
 
 
 class Video:
@@ -91,8 +129,23 @@ async def on_ready():
 # Petit message lorsqu'un membre rejoins le serveur
 @bot.event
 async def on_member_join(member):
-    channel = member.guild.get_channel(833826844511436825)
-    await channel.send(f"Accueillons à bras ouvert {member.mention} ! Bienvenue dans ce magnifique serveur 😁")
+    channel = member.guild.get_channel(852227347800784917)
+    embed = discord.Embed(title="**Bienvenue !**", description="", url="https://github.com/Lutenruto/Lybot",
+                          color=0x407294)
+    embed.set_author(name=member.display_name,
+                     icon_url=member.avatar_url,
+                     url="https://github.com/Lutenruto/")
+    embed.set_thumbnail(url="https://emoji.gg/assets/emoji/6721_AB_welcome.png")
+    embed.add_field(name=f"Accueillons à bras ouvert",
+                    value=""
+                          f"{member.mention} !\n"
+                          "Bienvenue dans ce magnifique serveur 😁\n"
+                          "---------------------------------------------------------------"
+                    , inline=False)
+
+    embed.set_footer(text="Pour plus d'information, contacter Lutenruto")
+
+    await channel.send(embed=embed)
 
 
 # Petit message lorsqu'un membre du serveur part
@@ -102,8 +155,22 @@ async def on_member_remove(member):
     for i in banned_users:
         if i.user.discriminator == member.discriminator:
             return
-    channel = member.guild.get_channel(833826844511436825)
-    await channel.send(f"En cette belle journée nous déplorons la perte d'un membre bien aimé, {member.mention}.")
+    channel = member.guild.get_channel(852227347800784917)
+    embed = discord.Embed(title="**Au revoir !**", description="", url="https://github.com/Lutenruto/Lybot",
+                          color=0x008080)
+    embed.set_author(name=member.display_name,
+                     icon_url=member.avatar_url,
+                     url="https://github.com/Lutenruto/")
+    embed.set_thumbnail(url="https://emoji.gg/assets/emoji/7242_bye_bean.png")
+    embed.add_field(name="En cette belle journée nous déplorons la perte d'un membre bien aimé,",
+                    value=""
+                          f"{member.mention}\n"
+                          "---------------------------------------------------------------"
+                    , inline=False)
+
+    embed.set_footer(text="Pour plus d'information, contacter Lutenruto")
+
+    await channel.send(embed=embed)
 
 
 @bot.event
@@ -157,6 +224,8 @@ async def command_display(ctx):
                           "**!cuisiner** => Fill in the order form and follow the instructions\n"
                           "**!roulette** => Allows you to participate in a roulette game where you have a win at the end (ban, kick, ...)\n"
                           "**!infoServ** => Shows basic server information\n"
+                          "**!getPrice** => Retrieve asset information from Binance\n"
+                          "```example : !getPrice btc/usdt```"
                           "---------------------------------------------------------------"
                     , inline=False)
     embed.add_field(name="Commandes musique",
