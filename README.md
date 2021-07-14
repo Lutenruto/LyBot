@@ -7,6 +7,7 @@
 - installé la lib pynacl
 - installé la lib youtube_dl
 - installé la lib python-binance
+- installé la lib requests
 
 ###Si vous êtes sur Windows il vous faut installer ffmpeg
 - installé ce dossier : https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-07-06-12-37/ffmpeg-N-102848-gb7ba472f43-win64-gpl-shared.zip
