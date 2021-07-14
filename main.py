@@ -101,18 +101,14 @@ async def on_command_error(ctx, error):
 @commands.has_permissions(manage_messages=True)
 async def load(ctx, name=None):
     if name:
-        for fileCog in os.listdir("./Cogs"):
-            if fileCog.endswith(".py"):
-                bot.load_extension(f'Cogs.{name}')
+        bot.load_extension(f'Cogs.{name}')
 
 
 @bot.command(name="unload")
 @commands.has_permissions(manage_messages=True)
 async def unload(ctx, name=None):
     if name:
-        for fileCog in os.listdir("./Cogs"):
-            if fileCog.endswith(".py"):
-                bot.unload_extension(f'Cogs.{name}')
+        bot.unload_extension(f'Cogs.{name}')
 
 
 @bot.command(name="reload")
@@ -120,13 +116,9 @@ async def unload(ctx, name=None):
 async def reload(ctx, name=None):
     if name:
         try:
-            for fileCog in os.listdir("./Cogs"):
-                if fileCog.endswith(".py"):
-                    bot.reload_extension(f'Cogs.{name}')
+            bot.reload_extension(f'Cogs.{name}')
         except:
-            for fileCog in os.listdir("./Cogs"):
-                if fileCog.endswith(".py"):
-                    bot.load_extension(f'Cogs.{name}')
+            bot.load_extension(f'Cogs.{name}')
 
 
 @bot.command(name="loadAll")
