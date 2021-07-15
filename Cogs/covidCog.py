@@ -30,7 +30,7 @@ async def covid_traitment(ctx, app_count, nom_labo, address_labo, next_rdv, url,
 
 
 def good_channel(ctx):
-    return ctx.message.channel.id == 864688091125383168
+    return ctx.message.channel.id == 864688813003112448
 
 
 class CogCovid(commands.Cog):
